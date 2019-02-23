@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Eigen/Eigen>
+#include <fstream>
+#include <string>
 
 namespace EL
 {
@@ -61,10 +63,10 @@ template<class T, int d1, int d2, int d3, int d4, int d5> Matrix<T, d1, d2, d3, 
 
 }
 
-template<class T> bool load_matrix(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m, const string& fname)
+template<class T> bool load_matrix(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m, const std::string& fname)
 {
-	fstream f;
-	f.open(fname.c_str(), ios::in);
+	std::fstream f;
+	f.open(fname.c_str(), std::ios::in);
 	if(f.is_open())
 		return load_matrix(m, f);
 	else
@@ -72,7 +74,7 @@ template<class T> bool load_matrix(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
 	return true;
 }
 
-template<class T> bool load_matrix(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m, istream& is)
+template<class T> bool load_matrix(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& m, std::istream& is)
 {
 	T x;
 	

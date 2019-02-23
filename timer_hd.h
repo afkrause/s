@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <cmath>
 // simple, matlab like timing measurements.
 // example:
 // Timer timer(10);
@@ -64,7 +65,7 @@ public:
 				// calculating the standard deviation with not enough samples doesnt really make any sense
 				if(n_repetitions>=5)
 				{
-					double SD = sqrt(sd_accum / (n_repetitions-1));	
+					double SD = std::sqrt(sd_accum / (n_repetitions-1));	
 					std::cout << "\t" << "SD = " << 1000.0f * SD << " ms";
 				}
 				std::cout << std::endl;

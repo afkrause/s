@@ -34,9 +34,25 @@ inline float fast_inverse_sqrt_around_one(float x)
 #include <immintrin.h>
 // this is the fastest way, using SSE instructions !
 // this incorporates also the necessary multiplication for vector normalization 
-inline void fast_inverse_sqrt_sse(float*  pOut, float* pIn)
+inline void fast_inverse_sqrt(float*  pOut, float* pIn)
 {
 	__m128 in = _mm_load_ss(pIn);
 	_mm_store_ss(pOut, _mm_rsqrt_ss(in));
 }
+#endif
+
+#ifdef __arm__
+inline void fast_inverse_sqrt(float*  pOut, float* pIn)
+{
+	//__m128 in = _mm_load_ss(pIn);
+	//_mm_store_ss(pOut, _mm_rsqrt_ss(in));
+	*pOut = sqrt(*pIn);
+/* todo !
+float32x2_t vrecps_f32(float32x2_t a, float32x2_t b);   // VRECPS.F32 d0, d0, d0 
+float32x4_t vrecpsq_f32(float32x4_t a, float32x4_t b);  // VRECPS.F32 q0, q0, q0 
+float32x2_t vrsqrts_f32(float32x2_t a, float32x2_t b);  // VRSQRTS.F32 d0, d0, d0
+float32x4_t vrsqrtsq_f32(float32x4_t a, float32x4_t b); // VRSQRTS.F32 q0, q0, q0
+*/
+}
+
 #endif
