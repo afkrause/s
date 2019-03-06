@@ -73,7 +73,7 @@ void Simple_gui::add_separator_box(const char* label)
 	y += 15 + 5;
 }
 
-void Simple_gui::add_slider(const char* label, double& val, double min_val, double max_val, double step)
+void Simple_gui::add_slider(const char* label, double& val, double min_val, double max_val, double step, const char* tooltip)
 {
 	if (!check_valid()) { return; }
 
@@ -93,6 +93,7 @@ void Simple_gui::add_slider(const char* label, double& val, double min_val, doub
 	slider->value(val);
 	slider->step(step);
 	slider->callback(simple_gui_slider_cb, &val);
+	slider->tooltip(tooltip);
 	sliders.push_back(slider);
 	slider_value_refs.push_back(&val);
 	y += 25 + 5;

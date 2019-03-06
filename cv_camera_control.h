@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 
-#include "../../s/simple_gui_fltk.h"
+#include "simple_gui_fltk.h"
 
 // very simple Wrapper Class cv::VideoCapture - only needed to store the camera device index
 class Camera : public cv::VideoCapture

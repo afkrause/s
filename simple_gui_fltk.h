@@ -91,7 +91,7 @@ public:
 	}
 
 	// limited to positive values for now
-	void add_slider(const char* label, double& val, double min_val = 0, double max_val = 1, double step = 0);
+	void add_slider(const char* label, double& val, double min_val = 0, double max_val = 1, double step = 0, const char* tooltip = nullptr);
 
 
 	// create a checkbox. 
