@@ -1,8 +1,6 @@
 #include "simple_gui_fltk.h"
 #include <math.h>
 
-#include <math.h>
-
 void simple_gui_slider_cb(Fl_Widget* w, void* user_data)
 {
 	*((double*)user_data) = ((Fl_Hor_Value_Slider*)w)->value();
