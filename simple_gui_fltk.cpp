@@ -1,4 +1,5 @@
 #include "simple_gui_fltk.h"
+#include <math.h>
 
 #include <math.h>
 
