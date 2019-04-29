@@ -37,7 +37,20 @@ void Simple_gui::setup(int x_, int y_, int w_, int h_, const char* title)
 	window->end();
 	//window->show(argc, argv);
 	window->show();// (0, nullptr);
-	buttton_functions.reserve(100); // avoid reallocations to keep pointers constant
+	buttton_functions.reserve(1000); // avoid reallocations to keep pointers constant
+
+	/*
+	sliders.clear();
+	slider_value_refs.clear();
+	check_buttons.clear();
+	check_buttons_value_refs.clear();
+	buttton_functions.clear();
+
+	// widged placement cursor pos
+	x = 10;
+	y = 10;
+	current_box = nullptr;
+	*/
 }
 
 void Simple_gui::show()
@@ -94,7 +107,7 @@ void Simple_gui::add_slider(const char* label, double& val, double min_val, doub
 	slider->value(val);
 	slider->step(step);
 	slider->callback(simple_gui_slider_cb, &val);
-	slider->tooltip(tooltip);
+	if (tooltip != nullptr) { slider->tooltip(tooltip); }
 	sliders.push_back(slider);
 	slider_value_refs.push_back(&val);
 	y += 25 + 5;
@@ -119,7 +132,7 @@ void Simple_gui::add_slider(const char* label, double& val, double min_val, doub
 	window->add(slider);
 }
 
-void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int col)
+void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int col, const char* tooltip)
 {
 	if (!check_valid()) { return; }
 
@@ -128,6 +141,7 @@ void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int co
 	auto button = new Fl_Check_Button(pos_x, y, 100, 20, label);
 	button->value(val);
 	button->callback(simple_gui_checkbox_cb, &val);
+	if (tooltip != nullptr) { button->tooltip(tooltip); }
 	check_buttons.push_back(button);
 	check_buttons_value_refs.push_back(&val);
 	// go to next line
@@ -140,7 +154,7 @@ void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int co
 	window->add(button);
 }
 
-void Simple_gui::add_button(const char* label, std::function<void()> func, int num_cols, int col)
+void Simple_gui::add_button(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
 {
 	if (!check_valid()) { return; }
 
@@ -164,6 +178,8 @@ void Simple_gui::add_button(const char* label, std::function<void()> func, int n
 
 	//button->callback(simple_gui_button_cb, (void*)&(func));
 	button->callback(simple_gui_button_cb, (void*)&(buttton_functions.back()));
+
+	if (tooltip != nullptr) { button->tooltip(tooltip); }
 
 	// go to next line
 	if (col == num_cols - 1)

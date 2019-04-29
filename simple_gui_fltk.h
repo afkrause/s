@@ -97,10 +97,10 @@ public:
 	// create a checkbox. 
 	// example if checkboxes shall be placed in 3 columns:
 	// add_checkbox("checkbox in column 1", b, 3, 0); add_checkbox("checkbox in column 2", b, 3, 1); add_checkbox("checkbox in column 3", b, 3, 2);
-	void add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0);
+	void add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 
 	// create a button. argument semantics similiar to add_checkbox
-	void add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0);
+	void add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 
 };
 
