@@ -91,15 +91,15 @@ void Simple_gui::add_separator_box(const char* label)
 	window->add(current_box);
 
 	// also create a group, such that radio buttons work properly within the box 
-	auto current_group = new Fl_Group(5, y, w - 10, 25);
+	current_group = new Fl_Group(5, y, w - 10, 25);
 	window->add(current_group);
 
 	y += 15 + 5;
 }
 
-void Simple_gui::add_slider(const char* label, double& val, double min_val, double max_val, double step, const char* tooltip)
+Fl_Hor_Value_Slider* Simple_gui::add_slider(const char* label, double& val, double min_val, double max_val, double step, const char* tooltip)
 {
-	if (!check_valid()) { return; }
+	if (!check_valid()) { return nullptr; }
 
 	// auto guess max value (to be 10^x)
 	if (val >= max_val)
@@ -140,11 +140,12 @@ void Simple_gui::add_slider(const char* label, double& val, double min_val, doub
 
 	box_adjust_size();
 	window->add(slider);
+	return slider;
 }
 
-void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int col, const char* tooltip)
+Fl_Check_Button* Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int col, const char* tooltip)
 {
-	if (!check_valid()) { return; }
+	if (!check_valid()) { return nullptr; }
 
 	const int col_width = (w - 20) / num_cols;
 	int pos_x = 10 + col * col_width;
@@ -162,6 +163,7 @@ void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int co
 
 	box_adjust_size();
 	window->add(button);
+	return button;
 }
 
 
@@ -171,9 +173,9 @@ Fl_Radio_Round_Button* bb = Fl_Radio_Round_Button(20, 50, 180, 20, "Button B");
 Fl_Radio_Round_Button* bc = Fl_Radio_Round_Button(20, 80, 180, 20, "Button C");
 */
 
-template<class T> void Simple_gui::add_button_helper(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
+template<class T> T* Simple_gui::add_button_helper(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
 {
-	if (!check_valid()) { return; }
+	if (!check_valid()) { return nullptr; }
 
 	if (buttton_functions.size() < buttton_functions.capacity())
 	{
@@ -182,7 +184,7 @@ template<class T> void Simple_gui::add_button_helper(const char* label, std::fun
 	else
 	{
 		std::cerr << "maximum number of allowed buttons reached.\n";
-		return;
+		return nullptr;
 	}
 	const int col_width = (w - 20) / num_cols;
 	int pos_x = 10 + col * col_width;
@@ -206,6 +208,7 @@ template<class T> void Simple_gui::add_button_helper(const char* label, std::fun
 
 	box_adjust_size();
 	window->add(button);
+	return button;
 }
 
 
@@ -236,21 +239,50 @@ template<class T> void Simple_gui::add_button_helper(const char* label, std::fun
 
 void test_module()
 {
-	double params[3]{ 10,110, 0.2 };
+	using namespace std;
+
+	// first, create a gui window:
 	Simple_gui sg(1000, 100, 480, 480);
+
+	
+	// easiest is to add a button: 
+	sg.add_button("print hello world!", []() {cout << "Hello world!\n"; });
+
+
+	// now, adding some sliders is also easy:
+	double params[3]{ 10,110, 0.2 };
 	sg.add_slider("contrast:", params[0]);
 	sg.add_slider("blur:", params[1]);
 	sg.add_slider("window size:", params[2]);
 
+
+	// you cann add a box to visually separate and group widgets:
+	sg.add_separator_box("some checkboxes:");
 	bool options[4]{ true, false, true, true };
 	sg.add_checkbox("first option 1", options[0]);
 	sg.add_checkbox("second option 2", options[1]);
 	sg.add_checkbox("third option 3", options[2]);
 
+	sg.add_separator_box("more checkboxes:");
 	bool options2[3]{ true, false, true };
-	sg.add_checkbox("checkbox in column 1", options[0], 3, 0);
-	sg.add_checkbox("checkbox in column 2", options[1], 3, 1);
-	sg.add_checkbox("checkbox in column 3", options[2], 3, 2);
+	sg.add_checkbox("checkbox column 1", options[0], 3, 0);
+	sg.add_checkbox("checkbox column 2", options[1], 3, 1);
+	sg.add_checkbox("checkbox column 3", options[2], 3, 2);
+
+
+
+	// a bit more complicated - using radio buttons
+	sg.add_separator_box("a radio button group:");
+	int my_val = 0;
+	auto cb_func = [&](int val) { my_val = val; std::cout << "my value set to:" << val << std::endl; };
+	sg.add_radio_button("radio button 1", [&]() {cb_func(0); }, 1, 0);
+	// pre-select this radio buttton
+	auto b = sg.add_radio_button("radio button 2", [&]() {cb_func(1); }, 1, 0);  if (b) { b->value(true); }
+	sg.add_radio_button("radio button 3", [&]() {cb_func(2); }, 1, 0);
+
+
+	// finish gui creation
+	sg.finish();
 
 	while (Fl::check())
 	{

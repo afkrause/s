@@ -21,6 +21,7 @@
 #include <FL/Fl_Hor_Value_Slider.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Radio_Button.H>
+#include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Check_Button.H>
 //#include <FL/Fl_s
 
@@ -60,7 +61,7 @@ protected:
 	int max_slider_label_width = 0;
 
 	bool check_valid();
-	template<class T> void add_button_helper(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
+	template<class T> T* add_button_helper(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 public:
 	Simple_gui() {}
 	
@@ -91,29 +92,30 @@ public:
 	// call this if you are done with building the gui. this ensures that the last separator box has the proper size.
 	void finish()
 	{
+		current_group->end();
 		box_adjust_size();
 	}
 
 	// limited to positive values for now
-	void add_slider(const char* label, double& val, double min_val = 0, double max_val = 1, double step = 0, const char* tooltip = nullptr);
+	Fl_Hor_Value_Slider* add_slider(const char* label, double& val, double min_val = 0, double max_val = 1, double step = 0, const char* tooltip = nullptr);
 
 
 	// create a checkbox. 
 	// example if checkboxes shall be placed in 3 columns:
 	// add_checkbox("checkbox in column 1", b, 3, 0); add_checkbox("checkbox in column 2", b, 3, 1); add_checkbox("checkbox in column 3", b, 3, 2);
-	void add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
+	Fl_Check_Button* add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 
 	// create a button. argument semantics similiar to add_checkbox
-	void add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	Fl_Button* add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
 	{
-		add_button_helper<Fl_Button>(label, func, num_cols, col, tooltip);
+		return add_button_helper<Fl_Button>(label, func, num_cols, col, tooltip);
 	}
 
 	// create a radio button. readio buttons must be grouped. hence, first create a group using add_separator_box.
 	// finish the group be creating the next separator_box.
-	void add_radio_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	Fl_Radio_Round_Button* add_radio_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
 	{
-		add_button_helper<Fl_Radio_Button>(label, func, num_cols, col, tooltip);
+		return add_button_helper<Fl_Radio_Round_Button>(label, func, num_cols, col, tooltip);
 	}
 };
 
