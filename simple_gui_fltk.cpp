@@ -61,6 +61,31 @@ void Simple_gui::show()
 	}
 }
 
+void Simple_gui::hide()
+{
+	if (window != nullptr)
+	{
+		window->hide();
+	}
+}
+
+void Simple_gui::finish()
+{
+	box_and_group_adjust_size();
+
+	if (window)
+	{
+		if (current_group)
+		{
+			current_group->end();
+			window->add(current_group);
+		}
+		window->end();
+	}
+}
+
+
+
 void Simple_gui::update_widgets()
 {
 	for (int i = 0; i < slider_value_refs.size(); i++)
@@ -78,21 +103,29 @@ void Simple_gui::add_separator_box(const char* label)
 {
 	if (!check_valid()) { return; }
 	
+	box_and_group_adjust_size();
+
+	if (current_group)
+	{
+		current_group->end();
+		window->add(current_group);
+	}
+
 	if (current_box)
 	{ 
 		y += 10;
-		current_group->end();
 	}
 
-	// first, generate a slider somewhere
+	// create a group, such that radio buttons work properly within the box 
+	current_group = new Fl_Group(5, y, w - 10, 8025); // make to group very large and adjust size later
+	//window->add(current_group);
+
+	// generate a box 
 	current_box = new Fl_Box(5, y, w - 10, 25, label);
 	current_box->box(FL_BORDER_BOX);
 	current_box->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_TOP);
 	window->add(current_box);
 
-	// also create a group, such that radio buttons work properly within the box 
-	current_group = new Fl_Group(5, y, w - 10, 25);
-	window->add(current_group);
 
 	y += 15 + 5;
 }
@@ -138,7 +171,7 @@ Fl_Hor_Value_Slider* Simple_gui::add_slider(const char* label, double& val, doub
 	}
 
 
-	box_adjust_size();
+	box_and_group_adjust_size();
 	window->add(slider);
 	return slider;
 }
@@ -161,7 +194,7 @@ Fl_Check_Button* Simple_gui::add_checkbox(const char* label, bool& val, int num_
 		y += 20 + 2;
 	}
 
-	box_adjust_size();
+	box_and_group_adjust_size();
 	window->add(button);
 	return button;
 }
@@ -172,6 +205,10 @@ Fl_Radio_Round_Button* ba = Fl_Radio_Round_Button(20, 20, 180, 20, "Button A");
 Fl_Radio_Round_Button* bb = Fl_Radio_Round_Button(20, 50, 180, 20, "Button B");
 Fl_Radio_Round_Button* bc = Fl_Radio_Round_Button(20, 80, 180, 20, "Button C");
 */
+
+// explicit instantiation
+template Fl_Button* Simple_gui::add_button_helper<Fl_Button>(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip);
+template Fl_Radio_Round_Button* Simple_gui::add_button_helper<Fl_Radio_Round_Button>(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip);
 
 template<class T> T* Simple_gui::add_button_helper(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
 {
@@ -206,13 +243,31 @@ template<class T> T* Simple_gui::add_button_helper(const char* label, std::funct
 		y += 25 + 2;
 	}
 
-	box_adjust_size();
-	window->add(button);
+	//window->add(button);
+	current_group->add(button);
 	return button;
+}
+
+void Simple_gui::box_and_group_adjust_size()
+{
+	if (current_group)
+	{
+		current_group->resizable(NULL); // do not change the size and position of child widgets
+		current_group->resize(current_group->x(), current_group->y(), current_group->w(), y - current_group->y() + 5);
+	}
+
+	if (current_box)
+	{
+		current_box->size(current_box->w(), y - current_box->y() + 5);
+	}
 }
 
 
 #ifdef __TEST_THIS_MODULE__
+
+//#pragma comment ( lib, "comctl32.lib")
+//#pragma comment ( lib, "ws2_32.lib")
+
 #ifdef _DEBUG
 #pragma comment(lib, "fltk14/bin/lib/Debug/fltkd.lib")
 #else

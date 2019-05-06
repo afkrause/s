@@ -4,26 +4,14 @@
 #include<iostream>
 #include<functional>
 
-#ifdef _DEBUG
-//#pragma comment ( lib, "fltkd.lib")
-//#pragma comment ( lib, "fltk_gld.lib")
-#else
-//#pragma comment ( lib, "fltk.lib")
-//#pragma comment ( lib, "fltk_gl.lib")
-#endif
-
-//#pragma comment ( lib, "comctl32.lib")
-//#pragma comment ( lib, "ws2_32.lib")
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Hor_Value_Slider.H>
 #include <FL/Fl_Button.H>
-#include <FL/Fl_Radio_Button.H>
-#include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_Check_Button.H>
-//#include <FL/Fl_s
+#include <FL/Fl_Radio_Round_Button.H>
 
 
 // TODO move into class, make pointer to class member..
@@ -53,10 +41,7 @@ protected:
 	Fl_Box* current_box = nullptr; 
 	Fl_Group* current_group = nullptr;
 
-	void box_adjust_size()
-	{
-		if (current_box) { current_box->size(current_box->w(), y - current_box->y() + 5 ); }
-	}
+	void box_and_group_adjust_size();
 
 	int max_slider_label_width = 0;
 
@@ -73,6 +58,7 @@ public:
 	void setup(int x_, int y_, int w_, int h_, const char* title = nullptr);
 
 	void show();
+	void hide();
 
 	// propagate events
 	void update()
@@ -90,11 +76,7 @@ public:
 	void add_separator_box(const char* label);
 
 	// call this if you are done with building the gui. this ensures that the last separator box has the proper size.
-	void finish()
-	{
-		current_group->end();
-		box_adjust_size();
-	}
+	void finish();
 
 	// limited to positive values for now
 	Fl_Hor_Value_Slider* add_slider(const char* label, double& val, double min_val = 0, double max_val = 1, double step = 0, const char* tooltip = nullptr);
