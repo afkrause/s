@@ -20,6 +20,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Hor_Value_Slider.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Radio_Button.H>
 #include <FL/Fl_Check_Button.H>
 //#include <FL/Fl_s
 
@@ -49,6 +50,8 @@ protected:
 	int y = 10;
 
 	Fl_Box* current_box = nullptr; 
+	Fl_Group* current_group = nullptr;
+
 	void box_adjust_size()
 	{
 		if (current_box) { current_box->size(current_box->w(), y - current_box->y() + 5 ); }
@@ -57,6 +60,7 @@ protected:
 	int max_slider_label_width = 0;
 
 	bool check_valid();
+	template<class T> void add_button_helper(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 public:
 	Simple_gui() {}
 	
@@ -100,8 +104,17 @@ public:
 	void add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
 
 	// create a button. argument semantics similiar to add_checkbox
-	void add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
+	void add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	{
+		add_button_helper<Fl_Button>(label, func, num_cols, col, tooltip);
+	}
 
+	// create a radio button. readio buttons must be grouped. hence, first create a group using add_separator_box.
+	// finish the group be creating the next separator_box.
+	void add_radio_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	{
+		add_button_helper<Fl_Radio_Button>(label, func, num_cols, col, tooltip);
+	}
 };
 
 

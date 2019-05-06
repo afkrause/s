@@ -77,13 +77,23 @@ void Simple_gui::update_widgets()
 void Simple_gui::add_separator_box(const char* label)
 {
 	if (!check_valid()) { return; }
-	if (current_box) { y += 10; }
+	
+	if (current_box)
+	{ 
+		y += 10;
+		current_group->end();
+	}
+
 	// first, generate a slider somewhere
-	auto box = new Fl_Box(5, y, w - 10, 25, label);
-	box->box(FL_BORDER_BOX);
-	box->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_TOP);
-	current_box = box;
-	window->add(box);
+	current_box = new Fl_Box(5, y, w - 10, 25, label);
+	current_box->box(FL_BORDER_BOX);
+	current_box->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_TOP);
+	window->add(current_box);
+
+	// also create a group, such that radio buttons work properly within the box 
+	auto current_group = new Fl_Group(5, y, w - 10, 25);
+	window->add(current_group);
+
 	y += 15 + 5;
 }
 
@@ -154,7 +164,14 @@ void Simple_gui::add_checkbox(const char* label, bool& val, int num_cols, int co
 	window->add(button);
 }
 
-void Simple_gui::add_button(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
+
+/*
+Fl_Radio_Round_Button* ba = Fl_Radio_Round_Button(20, 20, 180, 20, "Button A");
+Fl_Radio_Round_Button* bb = Fl_Radio_Round_Button(20, 50, 180, 20, "Button B");
+Fl_Radio_Round_Button* bc = Fl_Radio_Round_Button(20, 80, 180, 20, "Button C");
+*/
+
+template<class T> void Simple_gui::add_button_helper(const char* label, std::function<void()> func, int num_cols, int col, const char* tooltip)
 {
 	if (!check_valid()) { return; }
 
@@ -169,7 +186,7 @@ void Simple_gui::add_button(const char* label, std::function<void()> func, int n
 	}
 	const int col_width = (w - 20) / num_cols;
 	int pos_x = 10 + col * col_width;
-	auto button = new Fl_Button(pos_x, y, 100, 25, label);
+	auto button = new T(pos_x, y, 100, 25, label);
 
 	// fit button size to label width
 	int label_w = 0, label_h = 0;
