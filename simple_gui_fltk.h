@@ -103,5 +103,5 @@ public:
 
 
 #ifdef __TEST_THIS_MODULE__
-void test_module();
+void test_module_simple_gui();
 #endif

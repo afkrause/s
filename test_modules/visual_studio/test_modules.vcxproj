@@ -92,7 +92,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\fltk\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\sdl2\;$(MY_LIB_DIR)\fltk\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -114,7 +114,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\opencv40\build\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -156,7 +156,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MY_LIB_DIR);$(MY_LIB_DIR)\opencv40\build\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -186,7 +186,6 @@
     <ClInclude Include="..\vector_stack_allocated.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\simple_gui_fltk.cpp" />
     <ClCompile Include="..\..\test_modules.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

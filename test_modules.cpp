@@ -16,7 +16,9 @@
 //#include "timer_hd.h"
 //#include "speech.h"
 //#include "eigen_pseudoinverse.h"
-#include "simple_gui_fltk.h"
+//#include "simple_gui_fltk.h"
+#include "sdl_opencv.h"
+#include "sdl_opencv.cpp"
 
 //#define MULTIPLOT_WIN32
 //#define MULTIPLOT_FLTK
@@ -24,10 +26,12 @@
 
 
 
-int main()
+int main(int argc, char* argv[])
 {
 
-	test_module();
+	
+	test_module_sdl_opencv();
+	//test_module();
 	//test_Avi_generator();
 	//test_Archive();
 	//test_vector_s();
@@ -45,7 +49,8 @@ int main()
 	cout << endl << "press enter" << endl;
 	char c=0; cin.get(&c,1);
 
+	return EXIT_SUCCESS;
 }
 
-//#include "bzlib.c"
-
+// #include "bzlib.c"
+//#include<SDL2/sdl_windows_main.c>

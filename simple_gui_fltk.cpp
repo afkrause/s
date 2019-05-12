@@ -292,7 +292,7 @@ void Simple_gui::box_and_group_adjust_size()
 #endif
 
 
-void test_module()
+void test_module_simple_gui()
 {
 	using namespace std;
 

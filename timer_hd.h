@@ -26,7 +26,7 @@ protected:
 	std::string message;
 public:
 	
-	Timer(int n_measurements_ = 1, std::string message_ = "mean duration = ")
+	Timer(int n_measurements_ = 1, std::string message_ = "\nmean duration = ")
 	{
 		message = message_;
 		n_measurements = n_measurements_;
@@ -53,7 +53,12 @@ public:
 		auto dt = duration_cast<duration<double>>(high_resolution_clock::now() - t1);
 
 		// no repetitions - return value immediately 
-		if (n_measurements == 1) { return dt.count(); }
+		if (n_measurements == 1)
+		{
+			mean_duration = dt.count();
+			if (print_result) { std::cout << message << 1000.0f * mean_duration << " ms"; }
+			return mean_duration;
+		}
 
 
 		// calc mean and SD over n_repetitions
@@ -68,7 +73,7 @@ public:
 			{ 
 				std::cout << message << 1000.0f * mean_duration << " ms";
 			
-				// calculating the standard deviation with not enough samples doesnt really make any sense
+				// calculating the standard deviation without enough samples doesnt really make any sense
 				if(n_measurements >=5)
 				{
 					double SD = std::sqrt(sd_accum / (n_measurements - 1));
