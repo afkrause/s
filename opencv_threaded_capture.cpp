@@ -6,7 +6,7 @@ void Threaded_capture::capture_thread_func()
 	using namespace std;
 
 	cout << "\n" << cam_name << " capture thread has started\n";
-	Timer timer(500, cam_name + ":\t");
+	Timer timer(500, "\n" + cam_name + ":\t");
 	cv::Mat local_frame;
 	while (is_running)
 	{
