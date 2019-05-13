@@ -114,7 +114,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(MY_LIB_DIR)\opencv40\build\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MY_LIB_DIR);$(MY_LIB_DIR)\opencv40\build\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\SDL2\include\;$(MY_LIB_DIR)\fltk14\;$(MY_LIB_DIR)\eigen3\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
