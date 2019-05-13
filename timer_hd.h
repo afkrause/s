@@ -46,20 +46,13 @@ public:
 		t1 = std::chrono::high_resolution_clock::now();
 	}
 
-	// returns mean duration in s
+
+	// returns delta t between tick and tock. 
+	// prints the mean duration in s after n_measurements
 	double tock(bool print_result = true)
 	{
 		using namespace std::chrono;
 		auto dt = duration_cast<duration<double>>(high_resolution_clock::now() - t1);
-
-		// no repetitions - return value immediately 
-		if (n_measurements == 1)
-		{
-			mean_duration = dt.count();
-			if (print_result) { std::cout << message << 1000.0f * mean_duration << " ms"; }
-			return mean_duration;
-		}
-
 
 		// calc mean and SD over n_repetitions
 		if (mean_duration != 0.0f) { double tmp = mean_duration - dt.count();  sd_accum += tmp*tmp; }
@@ -76,10 +69,9 @@ public:
 				// calculating the standard deviation without enough samples doesnt really make any sense
 				if(n_measurements >=5)
 				{
-					double SD = std::sqrt(sd_accum / (n_measurements - 1));
+					double SD = std::sqrt(sd_accum / double(n_measurements - 1.0));
 					std::cout << "\t" << "SD = " << 1000.0f * SD << " ms";
 				}
-				std::cout << std::endl;
 			}
 
 			duration_accum = duration<double>(0);
@@ -87,7 +79,7 @@ public:
 			counter = 0;
 		}
 
-		return mean_duration;
+		return dt.count();
 	}
 };
 
