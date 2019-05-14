@@ -18,10 +18,10 @@ protected:
 	std::string cam_name;
 	std::shared_ptr<Camera> camera;
 	cv::Mat frame;
-	std::atomic<bool> is_running = false;
+	std::atomic<bool> is_running;
 	void capture_thread_func();
 public:
-	std::atomic<bool> new_frame = false;
+	std::atomic<bool> new_frame;
 
 	void setup(std::shared_ptr<Camera> cam, std::string cam_name_);
 
