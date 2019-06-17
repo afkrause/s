@@ -16,9 +16,10 @@
 //#include "timer_hd.h"
 //#include "speech.h"
 //#include "eigen_pseudoinverse.h"
-//#include "simple_gui_fltk.h"
-#include "sdl_opencv.h"
-#include "sdl_opencv.cpp"
+#include "simple_gui_fltk.h"
+#include "simple_gui_fltk.cpp"
+//#include "sdl_opencv.h"
+//#include "sdl_opencv.cpp"
 
 //#define MULTIPLOT_WIN32
 //#define MULTIPLOT_FLTK
@@ -30,7 +31,8 @@ int main(int argc, char* argv[])
 {
 
 	
-	test_module_sdl_opencv();
+	//test_module_sdl_opencv();
+	test_module_simple_gui();
 	//test_module();
 	//test_Avi_generator();
 	//test_Archive();

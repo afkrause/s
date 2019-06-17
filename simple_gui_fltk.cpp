@@ -111,6 +111,7 @@ void Simple_gui::add_separator_box(const char* label)
 		window->add(current_group);
 	}
 
+	// spacing between group boxes
 	if (current_box)
 	{ 
 		y += 10;
@@ -126,8 +127,12 @@ void Simple_gui::add_separator_box(const char* label)
 	current_box->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE | FL_ALIGN_TOP);
 	window->add(current_box);
 
+	if (std::string(label) != "")
+	{
+		y += 15; // spacing for the label string
+	}
 
-	y += 15 + 5;
+	 y+= 5;
 }
 
 Fl_Hor_Value_Slider* Simple_gui::add_slider(const char* label, double& val, double min_val, double max_val, double step, const char* tooltip)
@@ -214,6 +219,9 @@ template<class T> T* Simple_gui::add_button_helper(const char* label, std::funct
 {
 	if (!check_valid()) { return nullptr; }
 
+	if (!current_group) { add_separator_box(""); }
+
+
 	if (buttton_functions.size() < buttton_functions.capacity())
 	{
 		buttton_functions.push_back(func);
@@ -237,14 +245,15 @@ template<class T> T* Simple_gui::add_button_helper(const char* label, std::funct
 
 	if (tooltip != nullptr) { button->tooltip(tooltip); }
 
+	current_group->add(button);
+
 	// go to next line
 	if (col == num_cols - 1)
 	{
 		y += 25 + 2;
 	}
 
-	//window->add(button);
-	current_group->add(button);
+
 	return button;
 }
 
@@ -294,10 +303,18 @@ void Simple_gui::box_and_group_adjust_size()
 
 void test_module_simple_gui()
 {
+
 	using namespace std;
 
 	// first, create a gui window:
 	Simple_gui sg(1000, 100, 480, 480);
+
+	/*
+	Simple_gui sg_local(50, 50, 150, 100, "Record and Stream");
+	sg_local.add_button("stop streaming", [&]() { run = false;  });
+	sg_local.add_button("quit program", [&]() { exit(EXIT_SUCCESS); });
+	sg_local.finish();
+	*/
 
 	
 	// easiest is to add a button: 
