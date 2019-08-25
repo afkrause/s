@@ -27,6 +27,8 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 {
 	cam = camera;
 
+	sg.hide();
+
 	sg = Simple_gui(x, y, w, h, title);
 
 	sg.add_separator_box("control (auto)focus, exposure and gain:");
@@ -51,6 +53,8 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	});
 
 	//sg.add_slider("window size:", params[2]);
+
+	sg.finish();
 }
 
 void Camera_control::update()
