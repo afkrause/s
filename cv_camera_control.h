@@ -9,8 +9,13 @@
 class Camera : public cv::VideoCapture
 {
 protected:
-	int index = 0;
+	int index = -1;
+	std::string file_name;
 public:
+	Camera(std::string fname) : cv::VideoCapture(fname)
+	{
+		file_name = fname;
+	}
 	Camera(int idx) : cv::VideoCapture(idx)
 	{
 		index = idx;
