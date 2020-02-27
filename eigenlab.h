@@ -10,37 +10,37 @@ namespace EL
 // eigen helpers
 using namespace Eigen;
 
-template<class T = float> Matrix<T, -1, 1> rand(size_t n)
+template<class T = float> Matrix<T, Eigen::Dynamic, 1> rand(size_t n)
 {
 	return Matrix<T, -1, 1>::Random(n);
 }
 
-template<class T = float> Matrix<T, -1, -1> rand(size_t rows, size_t cols)
+template<class T = float> Matrix<T, Eigen::Dynamic, Eigen::Dynamic> rand(size_t rows, size_t cols)
 {
 	return Matrix<T, -1, -1>::Random(rows, cols);
 }
 
 
 // returns a Vector of size n with all elements equal to zero
-template<class T=float> Matrix<T,-1,1> zeros(size_t n)
+template<class T=float> Matrix<T, Eigen::Dynamic, 1> zeros(size_t n)
 {
 	return Matrix<T, -1, 1>::Zero(n);
 }
 
 // returns a Matrix of size [rows x cols] with all elements equal to zero
-template<class T = float> Eigen::Matrix<T, -1, -1> zeros(size_t rows, size_t cols)
+template<class T = float> Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> zeros(size_t rows, size_t cols)
 {
 	return Matrix<T, -1, -1>::Zero(rows, cols);
 }
 
-// returns a Vector of size n with all elements equal to zero
-template<class T = float> Matrix<T, -1, 1> ones(size_t n)
+// returns a Vector of size n with all elements equal to 1
+template<class T = float> Matrix<T, Eigen::Dynamic, 1> ones(size_t n)
 {
 	return Matrix<T, -1, 1>::Ones(n);
 }
 
-// returns a Matrix of size [rows x cols] with all elements equal to zero
-template<class T = float> Matrix<T, -1, -1> ones(size_t rows, size_t cols)
+// returns a Matrix of size [rows x cols] with all elements equal to 1
+template<class T = float> Matrix<T, Eigen::Dynamic, Eigen::Dynamic> ones(size_t rows, size_t cols)
 {
 	return Matrix<T, -1, -1>::ones(rows, cols);
 }
