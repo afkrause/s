@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-void Save_video::write(cv::Mat& img)
+void Save_video::write(cv::Mat& img, double timestamp)
 {
 	using namespace std;
 
@@ -14,33 +14,17 @@ void Save_video::write(cv::Mat& img)
 	}
 	else
 	{
-		auto mat = free_list.back();
+		auto frame = free_list.back();
 		free_list.pop_back();
-		img.copyTo(*mat);
-		fifo.push_back(mat);
+		
+		frame->timestamp = timestamp;
+		img.copyTo(frame->data);
+		
+		fifo.push_back(frame);
 	}
-	
-
-
-	/*
-	// videowriter has not finished yet (new_video_writer_frame not set to false) -- framedrop detected..
-	if (video_writer.isOpened() && new_frame == true)
-	{
-		std::cerr << "\nframe dropped while writing to: " << video_file_name;
-	}
-	
-
-	if (new_frame == false)
-	{
-		mx.lock();
-		img.copyTo(frame);
-		mx.unlock();
-		new_frame = true;
-	}
-	*/
 }
 
-void Save_video::open(std::string fname, int fps, cv::Size2i size, int buffer_size, int codec)
+void Save_video::open(std::string fname_video, std::string fname_timestamp, int fps, cv::Size2i size, int buffer_size, int codec)
 {
 	close();
 	free_list.clear();
@@ -49,9 +33,10 @@ void Save_video::open(std::string fname, int fps, cv::Size2i size, int buffer_si
 	for (auto& x : buffer) { free_list.push_back(&x); }
 	std::cout << "\nvideo writer buffer size=" << free_list.size();
 
-	video_file_name = fname;
+	video_file_name = fname_video;
 	
-	video_writer.open(fname, codec, fps, size);
+	video_writer.open(fname_video, codec, fps, size);
+	fstream_timestamp.open(fname_timestamp, std::ios::out);
 	run_thread = true;
 	local_thread = std::thread(&Save_video::video_writer_thread, this);
 }
@@ -65,21 +50,8 @@ void Save_video::close()
 {
 	using namespace std;
 	using namespace chrono;
-
-	// write remaining frames to disk
-	bool frames_remaining = true;
-	while (frames_remaining)
-	{
-		mx.lock();
-		if (fifo.empty())
-		{
-			frames_remaining = false;
-		}
-		mx.unlock();
-		std::this_thread::sleep_for(100ms);
-	}
 	
-	// wait for thread to finish
+	// wait for thread to finish and write remaining frames to disk
 	run_thread = false;
 	if (local_thread.joinable())
 	{
@@ -88,9 +60,7 @@ void Save_video::close()
 
 	// release video_writer and close timestamp fstream
 	video_writer.release();
-
-	// todo 
-	// fstream_timestamp.close();
+	fstream_timestamp.close();
 }
 
 void Save_video::video_writer_thread()
@@ -99,23 +69,33 @@ void Save_video::video_writer_thread()
 	using namespace std::chrono;
 	cout << "\nvideo writer thread started.";
 
-	while (run_thread)
+	bool run = true;
+	while (run)
 	{
-		cv::Mat* mat = nullptr;
+		Frame* f = nullptr;
+		
+		// lock because we access the shared data in the fifo
 		mx.lock();
+		
+		// run as long as some frames remain in the fifo
+		if (!run_thread && fifo.empty()) { run = false; }
+
+		// get a new frame from the fifo
 		if (!fifo.empty())
 		{
-			mat = fifo.front();
+			f = fifo.front();
 			fifo.erase(fifo.begin());
 		}
 		mx.unlock();
 
-		if (mat != nullptr)
+		// new data ? write to video file
+		if (f != nullptr)
 		{
-			video_writer.write(*mat);
+			video_writer.write(f->data);
+			fstream_timestamp << f->timestamp << "\n";
 
 			mx.lock();
-			free_list.push_back(mat);
+			free_list.push_back(f);
 			// debug cout << "\nfree_list size = " << free_list.size();
 			mx.unlock();			
 		}
@@ -123,5 +103,6 @@ void Save_video::video_writer_thread()
 		std::this_thread::sleep_for(1ms);
 		cv::waitKey(1); // needed for event propagation (or not needed??)
 	}
+
 	std::cout << "\nvideo writer thread stopped.";
 }
