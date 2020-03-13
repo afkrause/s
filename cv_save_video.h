@@ -25,9 +25,8 @@ protected:
 	std::vector<Frame> buffer;
 	std::vector<Frame*> free_list;
 	std::vector<Frame*> fifo;
-	std::atomic<bool> run_thread = true;
+	std::atomic<bool> run_thread{true};
 	void video_writer_thread();
-	//std::atomic<bool> new_frame = false;
 public:
 	void open(std::string fname, std::string fname_timestamp, int fps, cv::Size2i size, int buffer_size = 10, int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 	void close();	
