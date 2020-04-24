@@ -36,14 +36,16 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	sg.add_slider("exposure:", exposure, -20, 20, 0.01);
 	sg.add_slider("gain:", gain, 0, 255, 1);
 
-	sg.add_button("autofocus on", [&]() {cam->set(cv::CAP_PROP_AUTOFOCUS, 1); }, 2, 0);
-	sg.add_button("autofocus off", [&]() {cam->set(cv::CAP_PROP_AUTOFOCUS, 0); }, 2, 1);
+	sg.num_columns(2);
+	sg.add_button("autofocus on", [&]() {cam->set(cv::CAP_PROP_AUTOFOCUS, 1); });
+	sg.add_button("autofocus off", [&]() {cam->set(cv::CAP_PROP_AUTOFOCUS, 0); });
 
 	sg.add_separator_box("try to set camera resolution to common values:");
-	sg.add_button("320x240", [&]() { change_resolution(320, 240); }, 4, 0);
-	sg.add_button("640x480", [&]() { change_resolution(640, 480); }, 4, 1);
-	sg.add_button("800x600", [&]() { change_resolution(800, 600); }, 4, 2);
-	sg.add_button("1280x1024", [&]() { change_resolution(1280, 1024); }, 4, 3);
+	sg.num_columns(4);
+	sg.add_button("320x240", [&]() { change_resolution(320, 240); });
+	sg.add_button("640x480", [&]() { change_resolution(640, 480); });
+	sg.add_button("800x600", [&]() { change_resolution(800, 600); });
+	sg.add_button("1280x1024", [&]() { change_resolution(1280, 1024); });
 	sg.add_separator_box("manual resolution setting:");
 	sg.add_slider("width :", cam_width, 0, 1920, 10);
 	sg.add_slider("height:", cam_height, 0, 1080, 10);
@@ -55,6 +57,7 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	//sg.add_slider("window size:", params[2]);
 
 	sg.finish();
+	sg.show();
 }
 
 void Camera_control::update()
