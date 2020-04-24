@@ -30,7 +30,7 @@
 int main(int argc, char* argv[])
 {
 
-	
+	//test_Avi_generator();
 	//test_module_sdl_opencv();
 	test_module_simple_gui();
 	//test_module();

@@ -11,6 +11,8 @@
 #include <FL/Fl_Hor_Value_Slider.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
+//#include <FL/Fl_Toggle_Button.H>
+#include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Radio_Round_Button.H>
 
 
@@ -31,12 +33,20 @@ protected:
 	std::vector < bool* > check_buttons_value_refs;
 
 	std::vector< std::function<void()> > buttton_functions;
-	int w = 480;
-	int h = 480;
+	
+	// window position and size
+	int ww = 480;
+	int wh = 480;
+	int wx = 5;
+	int wy = 25;
 
-	// widged placement cursor pos
-	int x = 10;
-	int y = 10;
+	// cursor position for widged placement
+	int cx = 10;
+	int cy = 10;
+
+	// number of columns == number of widgets (e.g. buttons) in one row
+	int num_cols = 3; 
+	int cur_col = 0;  // current column
 
 	Fl_Box* current_box = nullptr; 
 	Fl_Group* current_group = nullptr;
@@ -45,8 +55,10 @@ protected:
 
 	int max_slider_label_width = 0;
 
+	int w_height = 25; // default widget height
+
 	bool check_valid();
-	template<class T> T* add_button_helper(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
+	template<class T> T* add_button_helper(const char* label, std::function<void()> func, const char* tooltip = nullptr);
 public:
 	Simple_gui() {}
 	
@@ -56,6 +68,18 @@ public:
 	}
 
 	void setup(int x_, int y_, int w_, int h_, const char* title = nullptr);
+
+	// set the widget height. default = 25. set to e.g. 15 if you want to place more widgets into a smaller space
+	int widget_height() { return w_height; }
+	void widget_height(int w) { w_height = w; }
+	
+	void num_columns(int n) { num_cols = n; }
+	int num_columns() { return num_cols; }
+
+	int w() { return ww; }
+	int h() { return wh; }
+	int x() { return wx; }
+	int y() { return wy; }
 
 	void show();
 	void hide();
@@ -84,21 +108,30 @@ public:
 
 	// create a checkbox. 
 	// example if checkboxes shall be placed in 3 columns:
-	// add_checkbox("checkbox in column 1", b, 3, 0); add_checkbox("checkbox in column 2", b, 3, 1); add_checkbox("checkbox in column 3", b, 3, 2);
-	Fl_Check_Button* add_checkbox(const char* label, bool& val, int num_cols = 1, int col = 0, const char* tooltip = nullptr);
+	// num_columns(3);
+	// add_checkbox("checkbox in column 1", b1);
+	// add_checkbox("checkbox in column 2", b2);
+	// add_checkbox("checkbox in column 3", b3);
+	Fl_Check_Button* add_checkbox(const char* label, bool& val, const char* tooltip = nullptr);
 
 	// create a button. argument semantics similiar to add_checkbox
-	Fl_Button* add_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	Fl_Button* add_button(const char* label, std::function<void()> func, const char* tooltip = nullptr)
 	{
-		return add_button_helper<Fl_Button>(label, func, num_cols, col, tooltip);
+		return add_button_helper<Fl_Button>(label, func, tooltip);
 	}
 
 	// create a radio button. readio buttons must be grouped. hence, first create a group using add_separator_box.
 	// finish the group be creating the next separator_box.
-	Fl_Radio_Round_Button* add_radio_button(const char* label, std::function<void()> func, int num_cols = 1, int col = 0, const char* tooltip = nullptr)
+	Fl_Radio_Round_Button* add_radio_button(const char* label, std::function<void()> func, const char* tooltip = nullptr)
 	{
-		return add_button_helper<Fl_Radio_Round_Button>(label, func, num_cols, col, tooltip);
+		return add_button_helper<Fl_Radio_Round_Button>(label, func, tooltip);
 	}
+
+	// create a radio button. readio buttons must be grouped. hence, first create a group using add_separator_box.
+	// finish the group be creating the next separator_box.
+	Fl_Light_Button* add_toggle_button(const char* label, bool& state, const char* tooltip = nullptr);
+
+
 };
 
 

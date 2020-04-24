@@ -173,11 +173,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\multiplot\multiplot.h" />
+    <ClInclude Include="..\..\savi.h" />
     <ClInclude Include="..\..\simple_gui_fltk.h" />
     <ClInclude Include="..\archive.h" />
     <ClInclude Include="..\archive_creator.h" />
     <ClInclude Include="..\array.h" />
-    <ClInclude Include="..\savi.h" />
     <ClInclude Include="..\speech.h" />
     <ClInclude Include="..\string_replace.h" />
     <ClInclude Include="..\tiny_jpeg.h" />
