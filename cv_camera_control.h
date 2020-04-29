@@ -16,7 +16,7 @@ public:
 	{
 		file_name = fname;
 	}
-	Camera(int idx) : cv::VideoCapture(idx)
+	Camera(int idx, cv::VideoCaptureAPIs backend = cv::CAP_ANY) : cv::VideoCapture(idx, backend)
 	{
 		index = idx;
 	}
