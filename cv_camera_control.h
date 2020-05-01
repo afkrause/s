@@ -16,10 +16,13 @@ public:
 	{
 		file_name = fname;
 	}
+
 	Camera(int idx, cv::VideoCaptureAPIs backend = cv::CAP_ANY) : cv::VideoCapture(idx, backend)
 	{
 		index = idx;
 	}
+
+	void print_info();
 	int get_index() { return index; }
 };
 
@@ -29,16 +32,19 @@ protected:
 	double focus = 0.0, old_focus = 0.0;
 	double exposure = 0.0, old_exposure = 0.0;
 	double gain = 0.0, old_gain = 0.0;
+	int id = 0;
 	Simple_gui sg;
 	std::shared_ptr<Camera> cam;
-	double cam_width=0, cam_height=0;
+	double cam_width = -1, cam_height = -1;
+	cv::VideoCaptureAPIs backend = cv::CAP_ANY;
 
 	//void change_resolution(shared_ptr<Camera> cap, int w, int h)
-	void change_resolution(int w, int h);
-
+	void change_cam_properties(int w, int h, cv::VideoCaptureAPIs backend=cv::CAP_ANY);
+	
 public:	
 	void setup(std::shared_ptr<Camera> camera, int x, int y, int w, int h, const char* title);
 	void update();
+	void print_cam_properties();
 	void set_camera(std::shared_ptr<Camera> c) { cam = c; }
 	void hide() { sg.hide(); }
 	void show() { sg.show(); }
