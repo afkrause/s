@@ -39,4 +39,7 @@ protected:
 public:	
 	void setup(std::shared_ptr<Camera> camera, int x, int y, int w, int h, const char* title);
 	void update();
+	void set_camera(std::shared_ptr<Camera> c) { cam = c; }
+	void hide() { sg.hide(); }
+	void show() { sg.show(); }
 };
