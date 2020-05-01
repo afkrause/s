@@ -96,7 +96,8 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 {
 	cam = camera;
 
-	auto current_backend = cam->get(cv::CAP_PROP_BACKEND);
+	auto current_backend = cv::CAP_ANY;
+	if (cam) { current_backend = cv::VideoCaptureAPIs(int(cam->get(cv::CAP_PROP_BACKEND))); }
 
 	sg.hide();
 
