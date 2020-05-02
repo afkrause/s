@@ -27,7 +27,9 @@ void Camera::print_info()
 	int ex = static_cast<int>(get(cv::CAP_PROP_FOURCC));
 	//char codec[] = { ex & 0XFF , (ex & 0XFF00) >> 8,(ex & 0XFF0000) >> 16,(ex & 0XFF000000) >> 24, 0 };
 	char codec[] = { (char)(ex & 255) , (char)((ex & 0XFF00) >> 8),(char)((ex & 0XFF0000) >> 16),(char)((ex & 0XFF000000) >> 24), 0 };
-	cout << "\n camera codec       = " << codec; 
+	cout << "\ncamera codec (int) = " << ex;
+	cout << "\ncamera codec (str) = " << codec;
+	//wcout << "\n camera codec (str) = " << wstring(codec, codec+5); 
 }
 
 
@@ -35,6 +37,7 @@ void Camera_control::change_cam_properties(int w, int h, cv::VideoCaptureAPIs ba
 {
 	using namespace std;
 
+	// create a new Camera if necessary
 	if (cam == nullptr)
 	{
 		cerr << "\n camera object is a nullpointer."; 
@@ -46,50 +49,49 @@ void Camera_control::change_cam_properties(int w, int h, cv::VideoCaptureAPIs ba
 		}
 	}
 
-	if (!cam->isOpened())
-	{ 
-		cam->open(id, backend);
-		if (!cam->isOpened())
-		{
-			std::cerr << "\n could not open camera with id=" << id << " and selected backend=" << backend;
-			return;
-		}		
-	}
-
+	// retrieve some previous settings
 	if (cam->isOpened())
 	{
 		cout << "\n camera properties before changing:";
 		cam->print_info();
 		id = cam->get_index();
-		if (backend == cv::CAP_ANY) { backend = cv::VideoCaptureAPIs(int(cam->get(cv::CAP_PROP_BACKEND))); } // if default value is given, try to choose the backend stored in the cam object
-		if (w == -1) { w = cam->get(cv::CAP_PROP_FRAME_WIDTH) ; }
+		//if (backend == cv::CAP_ANY) { backend = cv::VideoCaptureAPIs(int(cam->get(cv::CAP_PROP_BACKEND))); } // if default value is given, try to choose the backend stored in the cam object
+		if (w == -1) { w = cam->get(cv::CAP_PROP_FRAME_WIDTH); }
 		if (h == -1) { h = cam->get(cv::CAP_PROP_FRAME_HEIGHT); }
-
-		cam->release();
-		cam->open(id, backend);
-		if (!cam->isOpened())
-		{
-			cerr << "\n could not open camera with the new setting.";
-			return;
-		}
-		cam->set(cv::CAP_PROP_FRAME_WIDTH, w);
-		cam->set(cv::CAP_PROP_FRAME_HEIGHT, h);
-
-		// probe cam and read real width and height
-		cv::Mat img;
-		if (cam->read(img))
-		{
-			cam_width = cam->get(cv::CAP_PROP_FRAME_WIDTH);
-			cam_height = cam->get(cv::CAP_PROP_FRAME_HEIGHT);
-			sg.update_widgets();
-			cout << "\n camera properties after changing:";
-			cam->print_info();
-		}
-		else
-		{
-			cerr << "\n could not grab a frame.";
-		}
 	}
+
+	// release camera for a new, fresh initialization
+	cam->release();
+
+	// try to open the camera with the new parameters
+	cam->open(id, backend);
+
+	// set requested parameters
+	cam->set(cv::CAP_PROP_FRAME_WIDTH, w);
+	cam->set(cv::CAP_PROP_FRAME_HEIGHT, h);
+	cam->set(cv::CAP_PROP_FOURCC, codec);
+
+	if (!cam->isOpened())
+	{
+		std::cerr << "\n could not open camera with id=" << id << ", backend=" << backend << " and codec=" << codec;
+		return;
+	}
+
+	// probe cam and read real width and height
+	cv::Mat img;
+	if (cam->read(img))
+	{
+		cam_width = cam->get(cv::CAP_PROP_FRAME_WIDTH);
+		cam_height = cam->get(cv::CAP_PROP_FRAME_HEIGHT);
+		sg.update_widgets();
+		cout << "\n camera properties after changing:";
+		cam->print_info();
+	}
+	else
+	{
+		cerr << "\n could not grab a frame.";
+	}
+
 }
 
 void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, int h, const char* title)
@@ -97,6 +99,9 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	cam = camera;
 
 	auto current_backend = cv::CAP_ANY;
+	#ifdef _WIN32
+	current_backend = cv::CAP_DSHOW;
+	#endif	
 	if (cam) { current_backend = cv::VideoCaptureAPIs(int(cam->get(cv::CAP_PROP_BACKEND))); }
 
 	sg.hide();
@@ -104,20 +109,38 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	sg = Simple_gui(x, y, w, h, title);
 
 	sg.add_separator_box("select the video capture backend:");
-	sg.num_columns(2);
+	sg.num_columns(5);
 
-	auto b = sg.add_radio_button("Auto Detect", [&]() {backend = cv::CAP_ANY; change_cam_properties(-1,-1, backend); }, "OpenCV tries to autmatically detect the appropriate backend for video capture.");
+	auto b = sg.add_radio_button("default", [&]() {backend = cv::CAP_ANY; change_cam_properties(-1,-1, backend); }, "OpenCV tries to autmatically detect the appropriate backend for video capture.");
 	if (current_backend == cv::CAP_ANY) { b->value(true); }
 
-	b = sg.add_radio_button("Direct Show", [&]() {backend = cv::CAP_DSHOW; change_cam_properties(-1, -1, backend); }, "select the direct show backend for video capture.");
+	
+	b = sg.add_radio_button("v4linux", [&]() {backend = cv::CAP_V4L; change_cam_properties(-1, -1, backend); }, "Video For Linux backend.");
+	if (current_backend == cv::CAP_V4L) { b->value(true); }
+
+	b = sg.add_radio_button("dshow", [&]() {backend = cv::CAP_DSHOW; change_cam_properties(-1, -1, backend); }, "Direct show backend.");
 	if (current_backend == cv::CAP_DSHOW) { b->value(true); }
 
-	b = sg.add_radio_button("MS Media Foundation", [&]() {backend = cv::CAP_MSMF; change_cam_properties(-1, -1, backend); }, "select the Microsoft Media Foundation backend for video capture.");
+	b = sg.add_radio_button("msmf", [&]() {backend = cv::CAP_MSMF; change_cam_properties(-1, -1, backend); }, "Microsoft Media Foundation backend.");
 	if (current_backend == cv::CAP_MSMF) { b->value(true); }
 
-	b = sg.add_radio_button("MS Windows Runtime", [&]() {backend = cv::CAP_WINRT; change_cam_properties(-1, -1, backend); }, "select the Microsoft Windows Runtime backend for video capture.");
-	if (current_backend == cv::CAP_WINRT) { b->value(true); }
+	b = sg.add_radio_button("firewire", [&]() {backend = cv::CAP_FIREWIRE; change_cam_properties(-1, -1, backend); }, "IEEE 1394 drivers - FIREWIRE.");
+	if (current_backend == cv::CAP_FIREWIRE) { b->value(true); }
 
+	//b = sg.add_radio_button("mswr", [&]() {backend = cv::CAP_WINRT; change_cam_properties(-1, -1, backend); }, "Microsoft Windows Runtime backend.");
+	//if (current_backend == cv::CAP_WINRT) { b->value(true); }
+
+	
+
+	sg.add_separator_box("select video codec:");
+	sg.num_columns(6);	
+	b = sg.add_radio_button("default", [&]() {codec = -1; change_cam_properties(-1, -1, backend); }, "default codec of the webcam.");
+	b->value(true);
+	sg.add_radio_button("MJPG", [&]() {codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G'); change_cam_properties(-1, -1, backend); }, "Motion JPEG");
+	sg.add_radio_button("YUYV", [&]() {codec = cv::VideoWriter::fourcc('Y', 'U', 'Y', 'V'); change_cam_properties(-1, -1, backend); }, "YUV 4:2:2 as for UYVY but with different component ordering within the u_int32 macropixel.");
+	sg.add_radio_button("H264", [&]() {codec = cv::VideoWriter::fourcc('H', '2', '6', '4'); change_cam_properties(-1, -1, backend); }, "H264 high compression used by some cameras (e.g. ELP, Sony).");
+	sg.add_radio_button("Y800", [&]() {codec = cv::VideoWriter::fourcc('Y', '8', '0', '0'); change_cam_properties(-1, -1, backend); }, "Simple, single Y plane for monochrome images.");
+	sg.add_radio_button("24BG", [&]() {codec = cv::VideoWriter::fourcc('2', '4', 'B', 'G'); change_cam_properties(-1, -1, backend); }, "24 bit Blue Green Red.");	
 	sg.add_separator_box("control (auto)focus, exposure and gain:");
 	sg.add_slider("focus:", focus, 0, 255, 1);
 	sg.add_slider("exposure:", exposure, -20, 20, 0.01);
@@ -176,6 +199,11 @@ void Camera_control::update()
 	{
 		old_gain = gain;
 		cam->set(cv::CAP_PROP_GAIN, gain);
+	}
+
+	//if (codec != old_codec)
+	{
+		// can it be done here ? or do we need to do it in change_camera_
 	}
 }
 
