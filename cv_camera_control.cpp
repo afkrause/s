@@ -99,9 +99,12 @@ void Camera_control::setup(std::shared_ptr<Camera> camera, int x, int y, int w, 
 	cam = camera;
 
 	auto current_backend = cv::CAP_ANY;
-	#ifdef _WIN32
-	current_backend = cv::CAP_DSHOW;
-	#endif	
+	
+	// directshow backend does not report the camera FPS properly 
+	//#ifdef _WIN32
+	//current_backend = cv::CAP_DSHOW;
+	//#endif	
+	
 	if (cam) { current_backend = cv::VideoCaptureAPIs(int(cam->get(cv::CAP_PROP_BACKEND))); }
 
 	sg.hide();

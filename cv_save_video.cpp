@@ -101,7 +101,7 @@ void Save_video::video_writer_thread()
 		}
 
 		std::this_thread::sleep_for(1ms);
-		cv::waitKey(1); // needed for event propagation (or not needed??)
+		//cv::waitKey(1); // needed for event propagation (or not needed??)
 	}
 
 	std::cout << "\nvideo writer thread stopped.";
