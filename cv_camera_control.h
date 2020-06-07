@@ -16,11 +16,8 @@ public:
 	{
 		file_name = fname;
 	}
-	#ifdef _WIN32
-	Camera(int idx, cv::VideoCaptureAPIs backend = cv::CAP_DSHOW) : cv::VideoCapture(idx, backend)
-	#else
+
 	Camera(int idx, cv::VideoCaptureAPIs backend = cv::CAP_ANY) : cv::VideoCapture(idx, backend)
-	#endif
 	{
 		index = idx;
 	}
@@ -39,11 +36,7 @@ protected:
 	Simple_gui sg;
 	std::shared_ptr<Camera> cam;
 	double cam_width = -1, cam_height = -1;
-	#ifdef _WIN32
-	cv::VideoCaptureAPIs backend = cv::CAP_DSHOW; // direct show seems to be working the best for windows
-	#else
 	cv::VideoCaptureAPIs backend = cv::CAP_ANY;
-	#endif
 	int codec = -1;
 
 	//void change_resolution(shared_ptr<Camera> cap, int w, int h)
